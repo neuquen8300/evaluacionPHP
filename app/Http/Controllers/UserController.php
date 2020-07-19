@@ -20,8 +20,18 @@ class UserController extends Controller
 
         $user->save();
     }
-    public function update($id){
-        $user = User::find($id);
+    public function update(UpdateUser $request){
+
+        $updatedUser = $request->validated();
+
+        $user = User::where('email', $updatedUser->email);
+        
+        $user->sexo = $updatedUser['sexo'];
+        $user->altura = $updatedUser['altura'];
+        $user->peso = $updatedUser['peso'];
+        $user->fechaNac = $updatedUser['fechaNac'];
+
+        $user->save();
 
     }
 }

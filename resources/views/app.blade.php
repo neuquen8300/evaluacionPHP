@@ -6,6 +6,11 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <title>Laravel</title>
         <link rel="stylesheet" href="{{asset('/css/styles.css')}}" type="text/css">
+        <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC3WXmGtwE7aG7kHvfGGiI_RqFJ3DDBAvs"
+      defer async
+    ></script>
+
     </head>
     <body>
         <div id='app' class="content">

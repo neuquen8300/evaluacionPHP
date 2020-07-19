@@ -3,32 +3,31 @@
       <form class='login-form' @submit.prevent='login()'>
         <div class="input-wrapper">
           <label for="username" aria-label="username">Usuario o Email:</label>
-          <vue-text-input 
+          <vue-text-input
             name="username" 
             id="form-username" 
             placeholder="Usuario o Email..." 
             aria-placeholder="Usuario o Email" 
             required 
-            v-model="username"
-            @input="errorDismiss('form-username')"/>
+            @textInput='usernameModel'
+            />
         </div>
         <div class="input-wrapper">
           <label for="password" aria-label="password">Contraseña:</label>
-          <vue-password-input 
-            type="password" 
+          <vue-password-input
             name="password" 
             id="form-password" 
             placeholder="Contraseña..." 
             aria-placeholder="Contraseña" 
             required 
-            v-model="password"
-            @input="errorDismiss('form-password')"/>
+            @passwordInput='pwModel'
+            />
         </div>
         <div class="input-wrapper submit">
             <div class="message-box" v-if='loginError'>
                 {{loginMessage}}
             </div>
-            <vue-button type='submit' buttonText='INGRESAR' btnEvent='next-step' ></vue-button>
+        <vue-button class='submit-button' type='submit' buttonText='INGRESAR' btnEvent='next-step' ></vue-button>
         </div>
       </form>
   </section>
@@ -47,20 +46,39 @@ export default {
     },
     methods: {
         login: function(){
-            console.log('hola login');
             if(this.$data.username.length > 0 && this.$data.password.length > 0){
-                // fetch(...)
+                let formData = new FormData;
+                formData.append('username', this.$data.username.length);
+                formData.append('password', this.$data.username.password);
+                fetch('localhost/api/login', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(res => {
+                    return res.json();
+                })
+                .then(data => {
+                    console.log(data);
+                })
+                .catch(e => {
+                    console.log(e);
+                })
             } else if (this.$data.username.length === 0){
                 this.setLoginError('form-username');
             } else if (this.$data.password.length === 0){
                 this.setLoginError('form-password');
             }
         },
+        usernameModel: function(model){
+            this.$data.username = model;
+        },
+        pwModel: function(model){
+            this.$data.password = model;
+        },
         setLoginError: function(formInput){
-            console.log('hola')
             document.getElementById(formInput).classList.add('error');
             this.$data.loginError = true;
-            this.$data.loginMessage = 'Faltan completar los campos en rojo';
+            this.$data.loginMessage = 'Faltan completar los campos en rojo'; 
         },
         errorDismiss(formInput){
             document.getElementById(formInput).classList.remove('error');
@@ -72,22 +90,25 @@ export default {
 <style scoped>
     .login{
         background-color: #bbbbff;
-        width: 40vw;
-        margin: 0 auto;
+        width: calc(100vw - 2rem);
+        margin: 1rem;
         display: flex;
-        padding:  0 1rem;
         border-radius: 2px;
     }
     .input-wrapper{
         margin-top: 1rem;
         margin-bottom: 1rem;
     }
-    .login-form, .input-wrapper, .input-wrapper label{
+    .login-form{
+        padding: 0 1rem;
+    }
+    .login-form, .input-wrapper{
         width: 100%;
     }
     
     .input-wrapper.submit{
         display: flex;
-        text-align: right;
+        justify-content: right;
     }
+    
 </style>

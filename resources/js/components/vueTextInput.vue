@@ -1,10 +1,20 @@
 <template>
-  <input class='input' type='text'>
+  <input class='input' type='text' v-model="input" @input="sendInput">
 </template>
 
 <script>
 export default {
-    name: 'vue-input'
+    name: 'vue-input',
+    data(){
+        return {
+            input: ''
+        }
+    },
+    methods: {
+        sendInput: function(){
+            this.$emit('textInput', this.$data.input);
+        }
+    }
 }
 </script>
 

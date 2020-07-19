@@ -1,14 +1,14 @@
 <template>
-    <button class='vue-button'>{{buttonText}}</button>    
+    <button class='vue-button' @click='click'>{{buttonText}}</button>    
 </template>
 
 <script>
 export default {
     name: 'vue-button',
-    props: ['btnEvent', 'buttonText'],
+    props: ['buttonText'],
     methods: {
-        btnPressed: function(){
-            this.$emit(this.$props.btnEvent);
+        click: function(){
+            this.$emit('click');
         }
     }
 }

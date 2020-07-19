@@ -1,10 +1,20 @@
 <template>
-  <input class='input' type="password">
+  <input class='input' type="password" v-model="input" @input="passwordInput">
 </template>
 
 <script>
 export default {
-    name: 'vue-password-input'
+    name: 'vue-password-input',
+    data() {
+        return {
+            input: ''
+        }
+    },
+    methods: {
+        passwordInput: function () {
+            this.$emit('passwordInput', this.$data.input)
+        }
+    }
 }
 </script>
 
