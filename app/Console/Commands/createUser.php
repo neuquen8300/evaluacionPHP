@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Str;
 use App\User;
 use Exception;
 use Illuminate\Console\Command;
@@ -43,7 +44,8 @@ class createUser extends Command
 
         $password = $this->secret("Ingresar Contraseña (min. 8 caracteres) :");
         $user = new User();
-
+        $user->api_token = Str::random(60);
+        
         try{
             $user->username = $this->argument('username');
             if(filter_var($this->argument('email'),FILTER_VALIDATE_EMAIL)){

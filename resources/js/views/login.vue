@@ -48,11 +48,13 @@ export default {
         login: function(){
             if(this.$data.username.length > 0 && this.$data.password.length > 0){
                 let formData = new FormData;
-                formData.append('username', this.$data.username.length);
-                formData.append('password', this.$data.username.password);
-                fetch('localhost/api/login', {
+                formData.append('username', this.$data.username);
+                formData.append('password', this.$data.password);
+                //
+                fetch(process.env.MIX_APP_URL + '/api/login', { // Ver MIX_APP_URL en archivo .env
                     method: 'POST',
-                    body: formData
+                    body: formData,
+
                 })
                 .then(res => {
                     return res.json();
@@ -91,6 +93,7 @@ export default {
     .login{
         background-color: #bbbbff;
         width: calc(100vw - 2rem);
+        max-width: 30rem;
         margin: 1rem;
         display: flex;
         border-radius: 2px;
@@ -108,7 +111,13 @@ export default {
     
     .input-wrapper.submit{
         display: flex;
-        justify-content: right;
+        justify-content: center;
+    }
+    @media screen and (min-width: 30rem){
+        .login{
+            margin-right: auto;
+            margin-left: auto;
+        }
     }
     
 </style>

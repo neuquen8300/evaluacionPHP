@@ -28,7 +28,6 @@
                         max="220" 
                         placeholder="Indicar altura..." 
                         aria-placeholder="Indicar altura..."
-                        value="0"
                         name="altura"
                         id="form-altura"
                         @input="heightModel"
@@ -43,7 +42,6 @@
                         max="220" 
                         placeholder="Indicar peso..." 
                         aria-placeholder="Indicar peso..."
-                        value="0"
                         name="peso"
                         id="form-peso"
                         @input="weightModel"
@@ -57,13 +55,11 @@
             <div class="form-step second-step" v-else>
                 <div class="input-wrapper">
                     <label for="Ubicacion">Ubicación:</label>
-                    <vue-google-map-search />
-                    <vue-google-map></vue-google-map>
+                    <vue-google-map-search class='google-search'/>
+                    <vue-google-map />
                 </div>
             </div>
-        </form>
-        
-        <div class="step-button">
+            <div class="step-button">
             <div class="first-step-buttons" v-if="firstStep">
                 <vue-button buttonText='SIGUIENTE' @click='nextStep'></vue-button>
             </div>
@@ -72,6 +68,8 @@
                 <vue-button type="submit" form="profile-info" buttonText='ACTUALIZAR DATOS'></vue-button>
             </div> 
         </div>
+        </form>
+    
     </section>
 </template>
 
@@ -80,34 +78,53 @@ export default {
     name: 'profile',
     data(){
         return {
-            sexo: '',
-            altura: 0,
-            peso: 0,
-            fechaNac: '',
+            form: {
+                sexo: '',
+                altura: 0,
+                peso: 0,
+                fechaNac: '',
+            },
             firstStep: true,
-
+            
         }
     },
     methods: {
         nextStep: function(){
-            this.$data.firstStep = !this.$data.firstStep;          
+            console.log(this.$data.form);
+            for (let i = 0; i < this.$data.form.length; i++){
+                if(this.$data.form[i].length == 0 || this.$data.form[i] == 0){
+                    console.log(this.$data.form[i]);
+                    return;
+                } else {
+                    this.$data.firstStep = !this.$data.firstStep;
+                }
+            }
+
         },
         goBack: function(){
             this.$data.firstStep = !this.$data.firstStep;
         },
         sexModel: function(model){
-            this.$data.sexo = model;
+            this.$data.form.sexo = model;
         },
         weightModel: function(model){
-            this.$data.peso = model;
+            this.$data.form.peso = model;
         },
         heightModel: function(model){
-            this.$data.altura = model;
+            this.$data.form.altura = model;
         },
         birthModel: function(model){
-            this.$data.fechaNac = model;
+            this.$data.form.fechaNac = model;
         },
-        
+        updateProfile: function(){
+            let data = document.querySelectorAll('input');
+            console.log(data);
+            let form = [];
+            for (let i = 0; i < data.length; i++){
+                form.push([data[i].id, data[i].value]);
+            }
+           
+        }
        
     }
     
@@ -121,7 +138,7 @@ export default {
     background-color: #bbbbff;
     width: calc(100vw - 2rem);
     margin: 1rem;
-    
+    max-width: 52rem;
     display: flex;
     flex-direction: column;
     border-radius: 2px;
@@ -135,6 +152,9 @@ export default {
 .input-wrapper{
     padding-bottom: 1rem;
 }
+.google-search{
+    margin-bottom: 1rem;
+}
 input[type=date]{
    
     padding: 0 1rem;
@@ -144,10 +164,17 @@ input[type=date]{
 }
 .step-button{
     text-align: center;
+    padding-bottom: 1rem;
 }
-.map, #map{
+.map{
     width: 100%;
-    height: 8rem;
+    height: 16rem;
+}
+@media screen and (min-width: 1024px){
+    .profile-info{
+        margin-left: auto;
+        margin-right: auto;
+    }
 }
 
 </style>

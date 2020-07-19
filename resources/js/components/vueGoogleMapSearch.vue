@@ -22,14 +22,18 @@ export default {
         },
         search: function (){
             this.initAutocomplete();
+
             let autocomplete = this.$data.autocomplete;
             autocomplete.addListener("place_changed", function() {
-            let place = autocomplete.getPlace();
-            if (place.geometry){
-                eventBus.$emit('setMapPosition', place)
-            } 
+                let place = autocomplete.getPlace();
 
-        });
+                // Si el lugar tiene coordenadas, se emite un evento 
+                // via eventBus con los datos el cual es recibido por el mapa
+                // para actualizar su ubicación.
+                if (place.geometry){
+                    eventBus.$emit('setMapPosition', place);
+                } 
+            });
         }
     }
 }

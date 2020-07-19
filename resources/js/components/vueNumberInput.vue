@@ -12,7 +12,7 @@ export default {
     },
     methods: {
       input: function(){
-        this.$emit('input', numberInput);
+        this.$emit('input');
       }
     }
 }

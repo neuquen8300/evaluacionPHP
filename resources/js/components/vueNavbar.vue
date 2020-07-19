@@ -15,9 +15,6 @@ export default {
         return {
             isLogged: false
         }
-    },
-    mounted() {
-
     }
 }
 </script>
@@ -28,13 +25,16 @@ export default {
     width: calc(100vw - 2rem);
     height: 2rem;
     text-align: right;
+    display: flex;
 }
 .navbar-list{
+    width: 100%;
+    margin: auto 0;
     padding-left: 0;
     height: fit-content;
     display: flex;
     justify-content: space-between;
-
+    align-items: center;
 }
 li{
     display: inline-flex;

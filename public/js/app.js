@@ -1996,7 +1996,9 @@ __webpack_require__.r(__webpack_exports__);
       this.initAutocomplete();
       var autocomplete = this.$data.autocomplete;
       autocomplete.addListener("place_changed", function () {
-        var place = autocomplete.getPlace();
+        var place = autocomplete.getPlace(); // Si el lugar tiene coordenadas, se emite un evento 
+        // via eventBus con los datos el cual es recibido por el mapa
+        // para actualizar su ubicación.
 
         if (place.geometry) {
           _eventBus__WEBPACK_IMPORTED_MODULE_0__["default"].$emit('setMapPosition', place);
@@ -2033,8 +2035,7 @@ __webpack_require__.r(__webpack_exports__);
     return {
       isLogged: false
     };
-  },
-  mounted: function mounted() {}
+  }
 });
 
 /***/ }),
@@ -2061,7 +2062,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     input: function input() {
-      this.$emit('input', numberInput);
+      this.$emit('input');
     }
   }
 });
@@ -2207,9 +2208,11 @@ __webpack_require__.r(__webpack_exports__);
     login: function login() {
       if (this.$data.username.length > 0 && this.$data.password.length > 0) {
         var formData = new FormData();
-        formData.append('username', this.$data.username.length);
-        formData.append('password', this.$data.username.password);
-        fetch('localhost/api/login', {
+        formData.append('username', this.$data.username);
+        formData.append('password', this.$data.password); //
+
+        fetch("http://localhost:8001" + '/api/login', {
+          // Ver MIX_APP_URL en archivo .env
           method: 'POST',
           body: formData
         }).then(function (res) {
@@ -2328,37 +2331,55 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'profile',
   data: function data() {
     return {
-      sexo: '',
-      altura: 0,
-      peso: 0,
-      fechaNac: '',
+      form: {
+        sexo: '',
+        altura: 0,
+        peso: 0,
+        fechaNac: ''
+      },
       firstStep: true
     };
   },
   methods: {
     nextStep: function nextStep() {
-      this.$data.firstStep = !this.$data.firstStep;
+      console.log(this.$data.form);
+
+      for (var i = 0; i < this.$data.form.length; i++) {
+        if (this.$data.form[i].length == 0 || this.$data.form[i] == 0) {
+          console.log(this.$data.form[i]);
+          return;
+        } else {
+          this.$data.firstStep = !this.$data.firstStep;
+        }
+      }
     },
     goBack: function goBack() {
       this.$data.firstStep = !this.$data.firstStep;
     },
     sexModel: function sexModel(model) {
-      this.$data.sexo = model;
+      this.$data.form.sexo = model;
     },
     weightModel: function weightModel(model) {
-      this.$data.peso = model;
+      this.$data.form.peso = model;
     },
     heightModel: function heightModel(model) {
-      this.$data.altura = model;
+      this.$data.form.altura = model;
     },
     birthModel: function birthModel(model) {
-      this.$data.fechaNac = model;
+      this.$data.form.fechaNac = model;
+    },
+    updateProfile: function updateProfile() {
+      var data = document.querySelectorAll('input');
+      console.log(data);
+      var form = [];
+
+      for (var i = 0; i < data.length; i++) {
+        form.push([data[i].id, data[i].value]);
+      }
     }
   }
 });
@@ -6864,7 +6885,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.navbar[data-v-c9c7f70a]{\n    padding: 1rem;\n    width: calc(100vw - 2rem);\n    height: 2rem;\n    text-align: right;\n}\n.navbar-list[data-v-c9c7f70a]{\n    padding-left: 0;\n    height: -webkit-fit-content;\n    height: -moz-fit-content;\n    height: fit-content;\n    display: flex;\n    justify-content: space-between;\n}\nli[data-v-c9c7f70a]{\n    display: inline-flex;\n    list-style-type: none;\n}\n", ""]);
+exports.push([module.i, "\n.navbar[data-v-c9c7f70a]{\n    padding: 1rem;\n    width: calc(100vw - 2rem);\n    height: 2rem;\n    text-align: right;\n    display: flex;\n}\n.navbar-list[data-v-c9c7f70a]{\n    width: 100%;\n    margin: auto 0;\n    padding-left: 0;\n    height: -webkit-fit-content;\n    height: -moz-fit-content;\n    height: fit-content;\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n}\nli[data-v-c9c7f70a]{\n    display: inline-flex;\n    list-style-type: none;\n}\n", ""]);
 
 // exports
 
@@ -6940,7 +6961,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.login[data-v-c8f9cd0c]{\n    background-color: #bbbbff;\n    width: calc(100vw - 2rem);\n    margin: 1rem;\n    display: flex;\n    border-radius: 2px;\n}\n.input-wrapper[data-v-c8f9cd0c]{\n    margin-top: 1rem;\n    margin-bottom: 1rem;\n}\n.login-form[data-v-c8f9cd0c]{\n    padding: 0 1rem;\n}\n.login-form[data-v-c8f9cd0c], .input-wrapper[data-v-c8f9cd0c]{\n    width: 100%;\n}\n.input-wrapper.submit[data-v-c8f9cd0c]{\n    display: flex;\n    justify-content: right;\n}\n\n", ""]);
+exports.push([module.i, "\n.login[data-v-c8f9cd0c]{\n    background-color: #bbbbff;\n    width: calc(100vw - 2rem);\n    max-width: 30rem;\n    margin: 1rem;\n    display: flex;\n    border-radius: 2px;\n}\n.input-wrapper[data-v-c8f9cd0c]{\n    margin-top: 1rem;\n    margin-bottom: 1rem;\n}\n.login-form[data-v-c8f9cd0c]{\n    padding: 0 1rem;\n}\n.login-form[data-v-c8f9cd0c], .input-wrapper[data-v-c8f9cd0c]{\n    width: 100%;\n}\n.input-wrapper.submit[data-v-c8f9cd0c]{\n    display: flex;\n    justify-content: center;\n}\n@media screen and (min-width: 30rem){\n.login[data-v-c8f9cd0c]{\n        margin-right: auto;\n        margin-left: auto;\n}\n}\n\n", ""]);
 
 // exports
 
@@ -6959,7 +6980,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.profile-info[data-v-7b610d0c]{\n    background-color: #bbbbff;\n    width: calc(100vw - 2rem);\n    margin: 1rem;\n    \n    display: flex;\n    flex-direction: column;\n    border-radius: 2px;\n}\n.profile-info-form[data-v-7b610d0c]{\n    padding: 0 1rem;\n}\n.profile-info header[data-v-7b610d0c]{\n    text-align: center;\n}\n.input-wrapper[data-v-7b610d0c]{\n    padding-bottom: 1rem;\n}\ninput[type=date][data-v-7b610d0c]{\n   \n    padding: 0 1rem;\n    height: 2rem;\n    border-radius: 2px;\n    border: 1px solid #ababab;\n}\n.step-button[data-v-7b610d0c]{\n    text-align: center;\n}\n.map[data-v-7b610d0c], #map[data-v-7b610d0c]{\n    width: 100%;\n    height: 8rem;\n}\n\n", ""]);
+exports.push([module.i, "\n.profile-info[data-v-7b610d0c]{\n    background-color: #bbbbff;\n    width: calc(100vw - 2rem);\n    margin: 1rem;\n    max-width: 52rem;\n    display: flex;\n    flex-direction: column;\n    border-radius: 2px;\n}\n.profile-info-form[data-v-7b610d0c]{\n    padding: 0 1rem;\n}\n.profile-info header[data-v-7b610d0c]{\n    text-align: center;\n}\n.input-wrapper[data-v-7b610d0c]{\n    padding-bottom: 1rem;\n}\n.google-search[data-v-7b610d0c]{\n    margin-bottom: 1rem;\n}\ninput[type=date][data-v-7b610d0c]{\n   \n    padding: 0 1rem;\n    height: 2rem;\n    border-radius: 2px;\n    border: 1px solid #ababab;\n}\n.step-button[data-v-7b610d0c]{\n    text-align: center;\n    padding-bottom: 1rem;\n}\n.map[data-v-7b610d0c]{\n    width: 100%;\n    height: 16rem;\n}\n@media screen and (min-width: 1024px){\n.profile-info[data-v-7b610d0c]{\n        margin-left: auto;\n        margin-right: auto;\n}\n}\n\n", ""]);
 
 // exports
 
@@ -39480,7 +39501,6 @@ var render = function() {
                       max: "220",
                       placeholder: "Indicar altura...",
                       "aria-placeholder": "Indicar altura...",
-                      value: "0",
                       name: "altura",
                       id: "form-altura"
                     },
@@ -39506,7 +39526,6 @@ var render = function() {
                       max: "220",
                       placeholder: "Indicar peso...",
                       "aria-placeholder": "Indicar peso...",
-                      value: "0",
                       name: "peso",
                       id: "form-peso"
                     },
@@ -39540,49 +39559,49 @@ var render = function() {
                     _vm._v("Ubicación:")
                   ]),
                   _vm._v(" "),
-                  _c("vue-google-map-search"),
+                  _c("vue-google-map-search", { staticClass: "google-search" }),
                   _vm._v(" "),
                   _c("vue-google-map")
                 ],
                 1
               )
-            ])
+            ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "step-button" }, [
+          _vm.firstStep
+            ? _c(
+                "div",
+                { staticClass: "first-step-buttons" },
+                [
+                  _c("vue-button", {
+                    attrs: { buttonText: "SIGUIENTE" },
+                    on: { click: _vm.nextStep }
+                  })
+                ],
+                1
+              )
+            : _c(
+                "div",
+                { staticClass: "second-step-buttons" },
+                [
+                  _c("vue-button", {
+                    attrs: { buttonText: "ATRAS" },
+                    on: { click: _vm.goBack }
+                  }),
+                  _vm._v(" "),
+                  _c("vue-button", {
+                    attrs: {
+                      type: "submit",
+                      form: "profile-info",
+                      buttonText: "ACTUALIZAR DATOS"
+                    }
+                  })
+                ],
+                1
+              )
+        ])
       ]
-    ),
-    _vm._v(" "),
-    _c("div", { staticClass: "step-button" }, [
-      _vm.firstStep
-        ? _c(
-            "div",
-            { staticClass: "first-step-buttons" },
-            [
-              _c("vue-button", {
-                attrs: { buttonText: "SIGUIENTE" },
-                on: { click: _vm.nextStep }
-              })
-            ],
-            1
-          )
-        : _c(
-            "div",
-            { staticClass: "second-step-buttons" },
-            [
-              _c("vue-button", {
-                attrs: { buttonText: "ATRAS" },
-                on: { click: _vm.goBack }
-              }),
-              _vm._v(" "),
-              _c("vue-button", {
-                attrs: {
-                  type: "submit",
-                  form: "profile-info",
-                  buttonText: "ACTUALIZAR DATOS"
-                }
-              })
-            ],
-            1
-          )
-    ])
+    )
   ])
 }
 var staticRenderFns = [
@@ -55694,15 +55713,14 @@ __webpack_require__.r(__webpack_exports__);
 /*!****************************************!*\
   !*** ./resources/js/views/profile.vue ***!
   \****************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _profile_vue_vue_type_template_id_7b610d0c_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./profile.vue?vue&type=template&id=7b610d0c&scoped=true& */ "./resources/js/views/profile.vue?vue&type=template&id=7b610d0c&scoped=true&");
 /* harmony import */ var _profile_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./profile.vue?vue&type=script&lang=js& */ "./resources/js/views/profile.vue?vue&type=script&lang=js&");
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _profile_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _profile_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
-/* harmony import */ var _profile_vue_vue_type_style_index_0_id_7b610d0c_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./profile.vue?vue&type=style&index=0&id=7b610d0c&scoped=true&lang=css& */ "./resources/js/views/profile.vue?vue&type=style&index=0&id=7b610d0c&scoped=true&lang=css&");
+/* empty/unused harmony star reexport *//* harmony import */ var _profile_vue_vue_type_style_index_0_id_7b610d0c_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./profile.vue?vue&type=style&index=0&id=7b610d0c&scoped=true&lang=css& */ "./resources/js/views/profile.vue?vue&type=style&index=0&id=7b610d0c&scoped=true&lang=css&");
 /* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
@@ -55734,7 +55752,7 @@ component.options.__file = "resources/js/views/profile.vue"
 /*!*****************************************************************!*\
   !*** ./resources/js/views/profile.vue?vue&type=script&lang=js& ***!
   \*****************************************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
