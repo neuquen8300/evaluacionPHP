@@ -10,18 +10,24 @@ import VueButton from './components/vueButton';
 import VueTextInput from './components/vueTextInput';
 import VuePasswordInput from './components/vuePasswordInput';
 import VueNumberInput from './components/vueNumberInput';
+import VueGoogleMap from './components/vueGoogleMap';
+import VueGoogleMapSearch from './components/vueGoogleMapSearch';
 
 Vue.component('vue-navbar', VueNavbar);
 Vue.component('vue-button', VueButton);
 Vue.component('vue-text-input', VueTextInput);
 Vue.component('vue-password-input', VuePasswordInput);  
 Vue.component('vue-number-input', VueNumberInput);
+Vue.component('vue-google-map', VueGoogleMap);
+Vue.component('vue-google-map-search', VueGoogleMapSearch);
 
 // Vistas
 import home from './views/home';
 import login from './views/login';
 import profile from './views/profile';
-
+// Event Bus
+import eventBus from './eventBus';
+Vue.use(eventBus);
 // Router
 Vue.use(VueRouter);
 const router = new VueRouter({
@@ -45,6 +51,7 @@ const router = new VueRouter({
         }
     ]
 })
+ 
 
 const app = new Vue({
     el: '#app',

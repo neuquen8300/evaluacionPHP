@@ -7,7 +7,7 @@
             <div class="form-step first-step" v-if='firstStep'>
                 <div class="input-wrapper">
                     <label for="sexo">Indicar Sexo:</label>
-                    <select name="sexo" id="form-sexo" v-model="sexo" placeholder='Seleccionar...' aria-placeholder="Seleccionar...">
+                    <select name="sexo" id="form-sexo" @input="sexModel" placeholder='Seleccionar...' aria-placeholder="Seleccionar...">
                         <option value="" disabled selected>
                             Seleccionar...
                         </option>
@@ -31,7 +31,7 @@
                         value="0"
                         name="altura"
                         id="form-altura"
-                        v-model='altura'
+                        @input="heightModel"
                     />
                 </div>
                 <div class="input-wrapper">
@@ -46,21 +46,19 @@
                         value="0"
                         name="peso"
                         id="form-peso"
-                        v-model='peso'
+                        @input="weightModel"
                     />
                 </div>
                 <div class="input-wrapper">
                     <label for="Nacimiento">Fecha de nacimiento:</label>
-                    <input type="date" name="fechaNac" id="form-fechaNac" v-model='fechaNac'>
+                    <input type="date" name="fechaNac" id="form-fechaNac" @input="birthModel">
                 </div>
             </div>
             <div class="form-step second-step" v-else>
                 <div class="input-wrapper">
                     <label for="Ubicacion">Ubicación:</label>
-                    <vue-text-input name="ubicacion" id='form-ubicacion' @textInput='searchAdress' />
-                    <div id='map' class="map" @show="initMap" @>
-                        
-                    </div>
+                    <vue-google-map-search />
+                    <vue-google-map></vue-google-map>
                 </div>
             </div>
         </form>
@@ -86,7 +84,8 @@ export default {
             altura: 0,
             peso: 0,
             fechaNac: '',
-            firstStep: true
+            firstStep: true,
+
         }
     },
     methods: {
@@ -96,19 +95,20 @@ export default {
         goBack: function(){
             this.$data.firstStep = !this.$data.firstStep;
         },
-        initMap: function(){
-            map = new google.maps.Map(document.getElementById('map'), {
-                center: { lat: -34.397, lng: 150.644 },      
-                zoom: 8
-            })
+        sexModel: function(model){
+            this.$data.sexo = model;
         },
-        searchAdress: function(){
-            fetch('https://maps.googleapis.com/maps/api/place/findplacefromtext/json?parameters', {
-                body: {
-                     // Opciones
-                }
-            })
-        }
+        weightModel: function(model){
+            this.$data.peso = model;
+        },
+        heightModel: function(model){
+            this.$data.altura = model;
+        },
+        birthModel: function(model){
+            this.$data.fechaNac = model;
+        },
+        
+       
     }
     
 }
@@ -146,7 +146,7 @@ input[type=date]{
     text-align: center;
 }
 .map, #map{
-    width: 8rem;
+    width: 100%;
     height: 8rem;
 }
 
