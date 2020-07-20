@@ -3,12 +3,12 @@
 Autor: Bouzo Damián.
 
 Al momento de instalar: 
-* <addr> composer install </addr>
+* <code> composer install </code>
 
-* <addr> php artisan migrate </addr>
+* <code> php artisan migrate </code>
 No olvidar de colocar en el .env los datos de conexión.
 
-* <addr> php artisan jwt:generate </addr>
+* <code> php artisan jwt:generate </code>
 
 Este comando sirve para otorgar a la app una key para que los jwt entrantes sean verificados
 
@@ -18,4 +18,4 @@ Este comando sirve para otorgar a la app una key para que los jwt entrantes sean
 
 <h4> Como crear usuarios </h4>
 
-Con el comando <addr>php artisan make:user %USERNAME% %EMAIL%</addr> crearemos un usuario y le otorgaremos una contraseña.
+Con el comando <code>php artisan make:user %USERNAME% %EMAIL%</code> crearemos un usuario y le otorgaremos una contraseña.
