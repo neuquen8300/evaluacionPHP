@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\User;
 use Illuminate\Http\Request;
-
+use App\Http\Requests\AuthCheck;
+use JWTAuth;
 class UserController extends Controller
 {
     public function get($id){
@@ -33,5 +34,17 @@ class UserController extends Controller
 
         $user->save();
 
+    }
+    public function isAuthenticated(AuthCheck $request){
+        $auth = auth()->user();
+        if ($request->cookie(env('JWT_COOKIE_NAME')) && $auth){
+        return response()->json([
+                'email' => $auth->email,
+                'username' => $auth->username], 200);
+        } else {
+            return response()->json([
+                'error' => 'Sin autenticar.'
+            ], 401);
+        }
     }
 }

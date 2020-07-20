@@ -54,21 +54,27 @@ export default {
                 fetch(process.env.MIX_APP_URL + '/api/login', { // Ver MIX_APP_URL en archivo .env
                     method: 'POST',
                     body: formData,
-
                 })
                 .then(res => {
                     return res.json();
                 })
                 .then(data => {
-                    console.log(data);
+                    // Si hay exito, pedimos los datos del usuario.
+                    if (data.status === 'logged'){
+                        sessionStorage.setItem('username', this.$data.username);
+                        sessionStorage.setItem('access_token', data.access_token);
+                        this.$router.push('/profile');
+                    } else {
+                        this.setLoginError('Datos inválidos.');
+                    };
                 })
                 .catch(e => {
                     console.log(e);
                 })
             } else if (this.$data.username.length === 0){
-                this.setLoginError('form-username');
+                this.setLoginError('Faltan completar los campos en rojo', 'form-username');
             } else if (this.$data.password.length === 0){
-                this.setLoginError('form-password');
+                this.setLoginError('Faltan completar los campos en rojo', 'form-password');
             }
         },
         usernameModel: function(model){
@@ -77,10 +83,12 @@ export default {
         pwModel: function(model){
             this.$data.password = model;
         },
-        setLoginError: function(formInput){
-            document.getElementById(formInput).classList.add('error');
+        setLoginError: function(errorMsg, formInput = null){
+            if (formInput){
+                document.getElementById(formInput).classList.add('error');
+            }
             this.$data.loginError = true;
-            this.$data.loginMessage = 'Faltan completar los campos en rojo'; 
+            this.$data.loginMessage = errorMsg; 
         },
         errorDismiss(formInput){
             document.getElementById(formInput).classList.remove('error');

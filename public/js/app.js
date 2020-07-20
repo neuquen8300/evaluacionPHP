@@ -2019,6 +2019,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _eventBus__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../eventBus */ "./resources/js/eventBus.js");
 //
 //
 //
@@ -2029,12 +2030,52 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'vue-navbar',
   data: function data() {
     return {
-      isLogged: false
+      logged: false
     };
+  },
+  mounted: function mounted() {
+    var _this = this;
+
+    _eventBus__WEBPACK_IMPORTED_MODULE_0__["default"].$on('isLogged', function () {
+      _this.isLogged();
+    });
+  },
+  methods: {
+    isLogged: function isLogged() {
+      if (sessionStorage.getItem('access_token')) {
+        this.$data.logged = true;
+      } else {
+        this.$data.logged = false;
+      }
+    },
+    logout: function logout() {
+      var _this2 = this;
+
+      fetch("http://localhost:8000" + '/api/logout', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + sessionStorage.getItem('access_token')
+        }
+      }).then(function (res) {
+        return res.json();
+      }).then(function (data) {
+        if (data.status) {
+          sessionStorage.clear();
+
+          _this2.$router.push({
+            path: '/'
+          });
+        }
+      })["catch"](function (e) {
+        return e;
+      });
+    }
   }
 });
 
@@ -2206,26 +2247,38 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     login: function login() {
+      var _this = this;
+
       if (this.$data.username.length > 0 && this.$data.password.length > 0) {
         var formData = new FormData();
         formData.append('username', this.$data.username);
         formData.append('password', this.$data.password); //
 
-        fetch("http://localhost:8001" + '/api/login', {
+        fetch("http://localhost:8000" + '/api/login', {
           // Ver MIX_APP_URL en archivo .env
           method: 'POST',
           body: formData
         }).then(function (res) {
           return res.json();
         }).then(function (data) {
-          console.log(data);
+          // Si hay exito, pedimos los datos del usuario.
+          if (data.status === 'logged') {
+            sessionStorage.setItem('username', _this.$data.username);
+            sessionStorage.setItem('access_token', data.access_token);
+
+            _this.$router.push('/profile');
+          } else {
+            _this.setLoginError('Datos inválidos.');
+          }
+
+          ;
         })["catch"](function (e) {
           console.log(e);
         });
       } else if (this.$data.username.length === 0) {
-        this.setLoginError('form-username');
+        this.setLoginError('Faltan completar los campos en rojo', 'form-username');
       } else if (this.$data.password.length === 0) {
-        this.setLoginError('form-password');
+        this.setLoginError('Faltan completar los campos en rojo', 'form-password');
       }
     },
     usernameModel: function usernameModel(model) {
@@ -2234,10 +2287,15 @@ __webpack_require__.r(__webpack_exports__);
     pwModel: function pwModel(model) {
       this.$data.password = model;
     },
-    setLoginError: function setLoginError(formInput) {
-      document.getElementById(formInput).classList.add('error');
+    setLoginError: function setLoginError(errorMsg) {
+      var formInput = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+      if (formInput) {
+        document.getElementById(formInput).classList.add('error');
+      }
+
       this.$data.loginError = true;
-      this.$data.loginMessage = 'Faltan completar los campos en rojo';
+      this.$data.loginMessage = errorMsg;
     },
     errorDismiss: function errorDismiss(formInput) {
       document.getElementById(formInput).classList.remove('error');
@@ -6828,7 +6886,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.vue-button[data-v-85c6a2c6]{\n    font-family: 'Metropolis';\n    font-weight: 600;\n    border: none;\n    padding: 1rem;\n    text-align: center;\n    background-color: #1256ff;\n    color: white;\n    border-radius: 2px;\n}\n", ""]);
+exports.push([module.i, "\n.vue-button[data-v-85c6a2c6]{\r\n    font-family: 'Metropolis';\r\n    font-weight: 600;\r\n    border: none;\r\n    padding: 1rem;\r\n    text-align: center;\r\n    background-color: #1256ff;\r\n    color: white;\r\n    border-radius: 2px;\n}\r\n", ""]);
 
 // exports
 
@@ -6847,7 +6905,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.map[data-v-36eccec8]{\n    width: 100%;\n    height: 100%;\n}\n", ""]);
+exports.push([module.i, "\n.map[data-v-36eccec8]{\r\n    width: 100%;\r\n    height: 100%;\n}\r\n", ""]);
 
 // exports
 
@@ -6885,7 +6943,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.navbar[data-v-c9c7f70a]{\n    padding: 1rem;\n    width: calc(100vw - 2rem);\n    height: 2rem;\n    text-align: right;\n    display: flex;\n}\n.navbar-list[data-v-c9c7f70a]{\n    width: 100%;\n    margin: auto 0;\n    padding-left: 0;\n    height: -webkit-fit-content;\n    height: -moz-fit-content;\n    height: fit-content;\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n}\nli[data-v-c9c7f70a]{\n    display: inline-flex;\n    list-style-type: none;\n}\n", ""]);
+exports.push([module.i, "\n.navbar[data-v-c9c7f70a]{\r\n    padding: 1rem;\r\n    width: calc(100vw - 2rem);\r\n    height: 2rem;\r\n    text-align: right;\r\n    display: flex;\n}\n.navbar-list[data-v-c9c7f70a]{\r\n    width: 100%;\r\n    margin: auto 0;\r\n    padding-left: 0;\r\n    height: -webkit-fit-content;\r\n    height: -moz-fit-content;\r\n    height: fit-content;\r\n    display: flex;\r\n    justify-content: space-between;\r\n    align-items: center;\n}\nli[data-v-c9c7f70a]{\r\n    display: inline-flex;\r\n    list-style-type: none;\n}\r\n", ""]);
 
 // exports
 
@@ -6904,7 +6962,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.input{\n    border-radius: 2px;\n    width: calc(100% - 0.75rem);\n    border-left: none;\n    border-right: none;\n    border: 1px solid #ababab;\n    padding-left: 0.5rem;\n    padding-top: 0.5rem;\n    padding-bottom: 0.5rem;\n    transition: border 0.2s;\n}\n.input.error{\n    border: solid 1px red;\n}\n", ""]);
+exports.push([module.i, "\n.input{\r\n    border-radius: 2px;\r\n    width: calc(100% - 0.75rem);\r\n    border-left: none;\r\n    border-right: none;\r\n    border: 1px solid #ababab;\r\n    padding-left: 0.5rem;\r\n    padding-top: 0.5rem;\r\n    padding-bottom: 0.5rem;\r\n    transition: border 0.2s;\n}\n.input.error{\r\n    border: solid 1px red;\n}\r\n", ""]);
 
 // exports
 
@@ -6923,7 +6981,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.input[data-v-69cb8002]{\n    border-radius: 2px;\n    width: calc(100% - 0.75rem);\n    border-left: none;\n    border-right: none;\n    border: 1px solid #ababab;\n    padding-left: 0.5rem;\n    padding-top: 0.5rem;\n    padding-bottom: 0.5rem;\n    transition: border 0.2s;\n}\n.input.error[data-v-69cb8002]{\n    border: solid 1px red;\n}\n", ""]);
+exports.push([module.i, "\n.input[data-v-69cb8002]{\r\n    border-radius: 2px;\r\n    width: calc(100% - 0.75rem);\r\n    border-left: none;\r\n    border-right: none;\r\n    border: 1px solid #ababab;\r\n    padding-left: 0.5rem;\r\n    padding-top: 0.5rem;\r\n    padding-bottom: 0.5rem;\r\n    transition: border 0.2s;\n}\n.input.error[data-v-69cb8002]{\r\n    border: solid 1px red;\n}\r\n", ""]);
 
 // exports
 
@@ -6942,7 +7000,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.header{\n    width: 100%;\n    text-align: center;\n}\n", ""]);
+exports.push([module.i, "\n.header{\r\n    width: 100%;\r\n    text-align: center;\n}\r\n", ""]);
 
 // exports
 
@@ -6980,7 +7038,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.profile-info[data-v-7b610d0c]{\n    background-color: #bbbbff;\n    width: calc(100vw - 2rem);\n    margin: 1rem;\n    max-width: 52rem;\n    display: flex;\n    flex-direction: column;\n    border-radius: 2px;\n}\n.profile-info-form[data-v-7b610d0c]{\n    padding: 0 1rem;\n}\n.profile-info header[data-v-7b610d0c]{\n    text-align: center;\n}\n.input-wrapper[data-v-7b610d0c]{\n    padding-bottom: 1rem;\n}\n.google-search[data-v-7b610d0c]{\n    margin-bottom: 1rem;\n}\ninput[type=date][data-v-7b610d0c]{\n   \n    padding: 0 1rem;\n    height: 2rem;\n    border-radius: 2px;\n    border: 1px solid #ababab;\n}\n.step-button[data-v-7b610d0c]{\n    text-align: center;\n    padding-bottom: 1rem;\n}\n.map[data-v-7b610d0c]{\n    width: 100%;\n    height: 16rem;\n}\n@media screen and (min-width: 1024px){\n.profile-info[data-v-7b610d0c]{\n        margin-left: auto;\n        margin-right: auto;\n}\n}\n\n", ""]);
+exports.push([module.i, "\n.profile-info[data-v-7b610d0c]{\r\n    background-color: #bbbbff;\r\n    width: calc(100vw - 2rem);\r\n    margin: 1rem;\r\n    max-width: 52rem;\r\n    display: flex;\r\n    flex-direction: column;\r\n    border-radius: 2px;\n}\n.profile-info-form[data-v-7b610d0c]{\r\n    padding: 0 1rem;\n}\n.profile-info header[data-v-7b610d0c]{\r\n    text-align: center;\n}\n.input-wrapper[data-v-7b610d0c]{\r\n    padding-bottom: 1rem;\n}\n.google-search[data-v-7b610d0c]{\r\n    margin-bottom: 1rem;\n}\ninput[type=date][data-v-7b610d0c]{\r\n   \r\n    padding: 0 1rem;\r\n    height: 2rem;\r\n    border-radius: 2px;\r\n    border: 1px solid #ababab;\n}\n.step-button[data-v-7b610d0c]{\r\n    text-align: center;\r\n    padding-bottom: 1rem;\n}\n.map[data-v-7b610d0c]{\r\n    width: 100%;\r\n    height: 16rem;\n}\n@media screen and (min-width: 1024px){\n.profile-info[data-v-7b610d0c]{\r\n        margin-left: auto;\r\n        margin-right: auto;\n}\n}\r\n\r\n", ""]);
 
 // exports
 
@@ -39120,17 +39178,29 @@ var render = function() {
         1
       ),
       _vm._v(" "),
-      !_vm.isLogged
+      !_vm.logged
         ? _c(
             "li",
             [_c("router-link", { attrs: { to: "login" } }, [_vm._v("LOGIN")])],
             1
           )
-        : _c(
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.logged
+        ? _c(
             "li",
-            [_c("router-link", { attrs: { to: "logout" } }, [_vm._v("SALIR")])],
+            [
+              _c("router-link", { attrs: { to: "profile" } }, [
+                _vm._v("PERFIL")
+              ])
+            ],
             1
           )
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.logged
+        ? _c("li", { on: { click: _vm.logout } }, [_vm._v("SALIR")])
+        : _vm._e()
     ])
   ])
 }
@@ -54860,7 +54930,7 @@ Vue.use(_eventBus__WEBPACK_IMPORTED_MODULE_11__["default"]); // Router
 Vue.use(vue_router__WEBPACK_IMPORTED_MODULE_0__["default"]);
 var router = new vue_router__WEBPACK_IMPORTED_MODULE_0__["default"]({
   // mode: "history", Para remover el hashtag de la URL
-  mode: 'history',
+  mode: 'hash',
   routes: [{
     path: '/',
     component: _views_home__WEBPACK_IMPORTED_MODULE_8__["default"],
@@ -54872,8 +54942,45 @@ var router = new vue_router__WEBPACK_IMPORTED_MODULE_0__["default"]({
   }, {
     path: '/profile',
     component: _views_profile__WEBPACK_IMPORTED_MODULE_10__["default"],
-    name: 'Perfil'
+    name: 'Perfil',
+    beforeEnter: function beforeEnter(to, from, next) {
+      var username = sessionStorage.getItem('username');
+      var form = new FormData();
+      form.append('username', username);
+      fetch("http://localhost:8000" + '/api/authCheck', {
+        method: 'POST',
+        body: form,
+        headers: {
+          'Authorization': 'Bearer ' + sessionStorage.getItem('access_token')
+        }
+      }).then(function (res) {
+        return res.json();
+      }).then(function (data) {
+        if (data.email === username || data.username === username) {
+          next();
+        } else {
+          next({
+            name: 'Home'
+          });
+        }
+
+        ;
+      })["catch"](function (e) {
+        return e;
+      });
+      next();
+    }
   }]
+}); // Route Guard
+//
+// A expensas de trafico de datos, es más seguro checkear en cada cambio de ruta
+// si el usuario con el username dado por el login está efectivamente autenticado.
+// Devuelve true o false.
+
+router.beforeEach(function (to, from, next) {
+  _eventBus__WEBPACK_IMPORTED_MODULE_11__["default"].$emit('isLogged'); // $emit para la navbar
+
+  next();
 });
 var app = new Vue({
   el: '#app',
@@ -55814,8 +55921,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /home/damian/Documentos/VSCode/pprojects/phpServer/evaluacionPHP/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /home/damian/Documentos/VSCode/pprojects/phpServer/evaluacionPHP/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! H:\evaluacionPHP\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! H:\evaluacionPHP\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

@@ -32,9 +32,9 @@ Vue.use(eventBus);
 Vue.use(VueRouter);
 const router = new VueRouter({
     // mode: "history", Para remover el hashtag de la URL
-    mode: 'history',
+    mode: 'hash',
     routes: [
-        {
+        {  
             path: '/',
             component: home,
             name: 'Home'
@@ -47,11 +47,48 @@ const router = new VueRouter({
         {
             path: '/profile',
             component: profile,
-            name: 'Perfil'
+            name: 'Perfil',
+            beforeEnter: (to, from, next) => {
+                let username = sessionStorage.getItem('username')
+                let form = new FormData;
+                form.append('username', username);
+                fetch(process.env.MIX_APP_URL + '/api/authCheck',{
+                    method: 'POST',
+                    body: form,
+                    headers: {
+                       'Authorization': 'Bearer ' + sessionStorage.getItem('access_token') 
+                    }
+                })
+                .then(res => {
+                    return res.json();
+                })
+                .then(data => {
+                    if (data.email === username || data.username === username) {
+                        next();
+                    } else { 
+                        next({name: 'Home'})
+                    };
+                })
+                .catch(e => {
+                    return e;
+                })
+                next();
+            }
         }
-    ]
+    ],
+    
 })
- 
+
+// Route Guard
+//
+// A expensas de trafico de datos, es más seguro checkear en cada cambio de ruta
+// si el usuario con el username dado por el login está efectivamente autenticado.
+// Devuelve true o false.
+
+router.beforeEach((to, from, next)  => {
+    eventBus.$emit('isLogged'); // $emit para la navbar
+    next();
+})
 
 const app = new Vue({
     el: '#app',

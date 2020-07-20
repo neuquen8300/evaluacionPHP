@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,11 +14,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Auth::routes();
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+    
 
-Route::post('/updateUser', 'UserController@update');
+//Route::post('/updateUser', 'UserController@update');
 
+Auth::routes(['register' => false]);
+Route::post('/authCheck', 'UserController@isAuthenticated');    
