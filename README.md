@@ -1,4 +1,4 @@
-<h2> Evaluación PHP <h2>
+<h2> Evaluación PHP </h2>
 
 Autor: Bouzo Damián.
 
