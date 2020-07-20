@@ -12,7 +12,8 @@ No olvidar de colocar en el .env los datos de conexión.
 
 Este comando sirve para otorgar a la app una key para que los jwt entrantes sean verificados
 
-* Completar en .env el campo MIX_APP_URL donde el valor será la URL de la api a la que queremos conectar
+* Completar en .env el campo MIX_APP_URL donde el valor será la URL de la api a la que queremos conectar.
+(por defecto es http://localhost)
 
 * Completar en .env el campo JWT_COOKIE_NAME con el nombre que queramos para la cookie de jwt
 
