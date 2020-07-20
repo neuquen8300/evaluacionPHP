@@ -25,6 +25,8 @@ Vue.component('vue-google-map-search', VueGoogleMapSearch);
 import home from './views/home';
 import login from './views/login';
 import profile from './views/profile';
+import success from './views/success';
+
 // Event Bus
 import eventBus from './eventBus';
 Vue.use(eventBus);
@@ -78,6 +80,17 @@ const router = new VueRouter({
                 .catch(e => {
                     return e;
                 })
+                next();
+            }
+        },
+        {
+            path: '/success',
+            component: success,
+            name: 'Exito',
+            beforeEnter: function (to, from, next){
+                if (from.name !== 'Perfil'){
+                    next('/profile');
+                }
                 next();
             }
         }

@@ -72,11 +72,13 @@ export default {
     padding-left: 0;
     height: fit-content;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
 }
 li{
+    padding-left: 1rem;
     display: inline-flex;
     list-style-type: none;
+    font-size: 1.25rem;
 }
 </style>

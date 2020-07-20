@@ -203,6 +203,9 @@ export default {
                 return res.json();
             })
             .then(data => {
+                if(data.status == 'ok'){
+                    this.$router.push('/success');
+                }
             })
             .catch(e => {
                 return e;
