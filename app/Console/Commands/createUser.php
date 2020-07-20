@@ -44,7 +44,7 @@ class createUser extends Command
 
         $password = $this->secret("Ingresar Contraseña (min. 8 caracteres) :");
         $user = new User();
-        $user->api_token = Str::random(60);
+    
         
         try{
             $user->username = $this->argument('username');

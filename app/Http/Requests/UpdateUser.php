@@ -28,6 +28,7 @@ class UpdateUser extends FormRequest
             'altura' => ['required'],
             'peso' => ['required'],
             'fechaNac' => ['required'],
+            'ubicacion' => ['required']
         ];
     }
 }

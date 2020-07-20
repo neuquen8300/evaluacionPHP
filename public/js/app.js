@@ -2057,7 +2057,7 @@ __webpack_require__.r(__webpack_exports__);
     logout: function logout() {
       var _this2 = this;
 
-      fetch("http://localhost:8000" + '/api/logout', {
+      fetch("http://localhost:8001" + '/api/logout', {
         method: 'POST',
         headers: {
           'Authorization': 'Bearer ' + sessionStorage.getItem('access_token')
@@ -2103,7 +2103,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     input: function input() {
-      this.$emit('input');
+      this.$emit('input', this.$data.numberInput);
     }
   }
 });
@@ -2254,7 +2254,7 @@ __webpack_require__.r(__webpack_exports__);
         formData.append('username', this.$data.username);
         formData.append('password', this.$data.password); //
 
-        fetch("http://localhost:8000" + '/api/login', {
+        fetch("http://localhost:8001" + '/api/login', {
           // Ver MIX_APP_URL en archivo .env
           method: 'POST',
           body: formData
@@ -2296,9 +2296,6 @@ __webpack_require__.r(__webpack_exports__);
 
       this.$data.loginError = true;
       this.$data.loginMessage = errorMsg;
-    },
-    errorDismiss: function errorDismiss(formInput) {
-      document.getElementById(formInput).classList.remove('error');
     }
   }
 });
@@ -2314,6 +2311,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _eventBus__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../eventBus */ "./resources/js/eventBus.js");
 //
 //
 //
@@ -2389,6 +2387,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'profile',
   data: function data() {
@@ -2397,29 +2401,47 @@ __webpack_require__.r(__webpack_exports__);
         sexo: '',
         altura: 0,
         peso: 0,
-        fechaNac: ''
+        fechaNac: '',
+        ubicacion: ''
       },
-      firstStep: true
+      firstStep: true,
+      errorCheck: 0
     };
+  },
+  mounted: function mounted() {
+    var _this = this;
+
+    _eventBus__WEBPACK_IMPORTED_MODULE_0__["default"].$on('setMapPosition', function (place) {
+      _this.$data.form.ubicacion = place.formatted_address;
+    });
   },
   methods: {
     nextStep: function nextStep() {
-      console.log(this.$data.form);
+      var select = document.querySelector('select');
+      var input = document.querySelectorAll('input');
+      this.$data.errorCheck = 0;
 
-      for (var i = 0; i < this.$data.form.length; i++) {
-        if (this.$data.form[i].length == 0 || this.$data.form[i] == 0) {
-          console.log(this.$data.form[i]);
-          return;
+      for (var i = 0; i < input.length; i++) {
+        if (input[i].value === 0 || input[i].value === '') {
+          this.$data.errorCheck++;
+          this.setInputError(input[i].id);
         } else {
-          this.$data.firstStep = !this.$data.firstStep;
+          this.errorDismiss(input[i].id);
         }
       }
+
+      if (select.value.length == 0) {
+        this.$data.errorCheck++;
+        this.setInputError(select.id);
+      }
+
+      this.$data.errorCheck == 0 ? this.$data.firstStep = !this.$data.firstStep : null;
     },
     goBack: function goBack() {
       this.$data.firstStep = !this.$data.firstStep;
     },
     sexModel: function sexModel(model) {
-      this.$data.form.sexo = model;
+      this.$data.form.sexo = model.target.value;
     },
     weightModel: function weightModel(model) {
       this.$data.form.peso = model;
@@ -2428,16 +2450,35 @@ __webpack_require__.r(__webpack_exports__);
       this.$data.form.altura = model;
     },
     birthModel: function birthModel(model) {
-      this.$data.form.fechaNac = model;
+      this.$data.form.fechaNac = model.target.value;
     },
     updateProfile: function updateProfile() {
-      var data = document.querySelectorAll('input');
-      console.log(data);
-      var form = [];
-
-      for (var i = 0; i < data.length; i++) {
-        form.push([data[i].id, data[i].value]);
-      }
+      var data = this.$data.form;
+      var form = new FormData();
+      form.append('sexo', data.sexo);
+      form.append('peso', data.peso);
+      form.append('altura', data.altura);
+      form.append('fechaNac', data.fechaNac);
+      form.append('ubicacion', data.ubicacion);
+      fetch("http://localhost:8001" + '/api/updateProfile', {
+        method: 'POST',
+        body: form,
+        headers: {
+          'Authorization': 'Bearer ' + sessionStorage.getItem('access_token')
+        }
+      }).then(function (res) {
+        return res.json();
+      }).then(function (data) {
+        console.log(data);
+      })["catch"](function (e) {
+        return e;
+      });
+    },
+    setInputError: function setInputError(formInput) {
+      document.getElementById(formInput).classList.add('error');
+    },
+    errorDismiss: function errorDismiss(formInput) {
+      document.getElementById(formInput).classList.remove('error');
     }
   }
 });
@@ -6886,7 +6927,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.vue-button[data-v-85c6a2c6]{\r\n    font-family: 'Metropolis';\r\n    font-weight: 600;\r\n    border: none;\r\n    padding: 1rem;\r\n    text-align: center;\r\n    background-color: #1256ff;\r\n    color: white;\r\n    border-radius: 2px;\n}\r\n", ""]);
+exports.push([module.i, "\n.vue-button[data-v-85c6a2c6]{\n    font-family: 'Metropolis';\n    font-weight: 600;\n    border: none;\n    padding: 1rem;\n    text-align: center;\n    background-color: #1256ff;\n    color: white;\n    border-radius: 2px;\n}\n", ""]);
 
 // exports
 
@@ -6905,7 +6946,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.map[data-v-36eccec8]{\r\n    width: 100%;\r\n    height: 100%;\n}\r\n", ""]);
+exports.push([module.i, "\n.map[data-v-36eccec8]{\n    width: 100%;\n    height: 100%;\n}\n", ""]);
 
 // exports
 
@@ -6943,7 +6984,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.navbar[data-v-c9c7f70a]{\r\n    padding: 1rem;\r\n    width: calc(100vw - 2rem);\r\n    height: 2rem;\r\n    text-align: right;\r\n    display: flex;\n}\n.navbar-list[data-v-c9c7f70a]{\r\n    width: 100%;\r\n    margin: auto 0;\r\n    padding-left: 0;\r\n    height: -webkit-fit-content;\r\n    height: -moz-fit-content;\r\n    height: fit-content;\r\n    display: flex;\r\n    justify-content: space-between;\r\n    align-items: center;\n}\nli[data-v-c9c7f70a]{\r\n    display: inline-flex;\r\n    list-style-type: none;\n}\r\n", ""]);
+exports.push([module.i, "\n.navbar[data-v-c9c7f70a]{\n    padding: 1rem;\n    width: calc(100vw - 2rem);\n    height: 2rem;\n    text-align: right;\n    display: flex;\n}\n.navbar-list[data-v-c9c7f70a]{\n    width: 100%;\n    margin: auto 0;\n    padding-left: 0;\n    height: -webkit-fit-content;\n    height: -moz-fit-content;\n    height: fit-content;\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n}\nli[data-v-c9c7f70a]{\n    display: inline-flex;\n    list-style-type: none;\n}\n", ""]);
 
 // exports
 
@@ -6962,7 +7003,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.input{\r\n    border-radius: 2px;\r\n    width: calc(100% - 0.75rem);\r\n    border-left: none;\r\n    border-right: none;\r\n    border: 1px solid #ababab;\r\n    padding-left: 0.5rem;\r\n    padding-top: 0.5rem;\r\n    padding-bottom: 0.5rem;\r\n    transition: border 0.2s;\n}\n.input.error{\r\n    border: solid 1px red;\n}\r\n", ""]);
+exports.push([module.i, "\n.input{\n    border-radius: 2px;\n    width: calc(100% - 0.75rem);\n    border-left: none;\n    border-right: none;\n    border: 1px solid #ababab;\n    padding-left: 0.5rem;\n    padding-top: 0.5rem;\n    padding-bottom: 0.5rem;\n    transition: border 0.2s;\n}\n.input.error{\n    border: solid 1px red;\n}\n", ""]);
 
 // exports
 
@@ -6981,7 +7022,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.input[data-v-69cb8002]{\r\n    border-radius: 2px;\r\n    width: calc(100% - 0.75rem);\r\n    border-left: none;\r\n    border-right: none;\r\n    border: 1px solid #ababab;\r\n    padding-left: 0.5rem;\r\n    padding-top: 0.5rem;\r\n    padding-bottom: 0.5rem;\r\n    transition: border 0.2s;\n}\n.input.error[data-v-69cb8002]{\r\n    border: solid 1px red;\n}\r\n", ""]);
+exports.push([module.i, "\n.input[data-v-69cb8002]{\n    border-radius: 2px;\n    width: calc(100% - 0.75rem);\n    border-left: none;\n    border-right: none;\n    border: 1px solid #ababab;\n    padding-left: 0.5rem;\n    padding-top: 0.5rem;\n    padding-bottom: 0.5rem;\n    transition: border 0.2s;\n}\n.input.error[data-v-69cb8002]{\n    border: solid 1px red;\n}\n", ""]);
 
 // exports
 
@@ -7000,7 +7041,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.header{\r\n    width: 100%;\r\n    text-align: center;\n}\r\n", ""]);
+exports.push([module.i, "\n.header{\n    width: 100%;\n    text-align: center;\n}\n", ""]);
 
 // exports
 
@@ -7038,7 +7079,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.profile-info[data-v-7b610d0c]{\r\n    background-color: #bbbbff;\r\n    width: calc(100vw - 2rem);\r\n    margin: 1rem;\r\n    max-width: 52rem;\r\n    display: flex;\r\n    flex-direction: column;\r\n    border-radius: 2px;\n}\n.profile-info-form[data-v-7b610d0c]{\r\n    padding: 0 1rem;\n}\n.profile-info header[data-v-7b610d0c]{\r\n    text-align: center;\n}\n.input-wrapper[data-v-7b610d0c]{\r\n    padding-bottom: 1rem;\n}\n.google-search[data-v-7b610d0c]{\r\n    margin-bottom: 1rem;\n}\ninput[type=date][data-v-7b610d0c]{\r\n   \r\n    padding: 0 1rem;\r\n    height: 2rem;\r\n    border-radius: 2px;\r\n    border: 1px solid #ababab;\n}\n.step-button[data-v-7b610d0c]{\r\n    text-align: center;\r\n    padding-bottom: 1rem;\n}\n.map[data-v-7b610d0c]{\r\n    width: 100%;\r\n    height: 16rem;\n}\n@media screen and (min-width: 1024px){\n.profile-info[data-v-7b610d0c]{\r\n        margin-left: auto;\r\n        margin-right: auto;\n}\n}\r\n\r\n", ""]);
+exports.push([module.i, "\n.profile-info[data-v-7b610d0c]{\n    background-color: #bbbbff;\n    width: calc(100vw - 2rem);\n    margin: 1rem;\n    max-width: 52rem;\n    display: flex;\n    flex-direction: column;\n    border-radius: 2px;\n}\n.profile-info-form[data-v-7b610d0c]{\n    padding: 0 1rem;\n}\n.profile-info header[data-v-7b610d0c]{\n    text-align: center;\n}\n.input-wrapper[data-v-7b610d0c]{\n    padding-bottom: 1rem;\n}\n.google-search[data-v-7b610d0c]{\n    margin-bottom: 1rem;\n}\ninput[type=date][data-v-7b610d0c]{\n   \n    padding: 0 1rem;\n    height: 2rem;\n    border-radius: 2px;\n    border: 1px solid #ababab;\n}\n.step-button[data-v-7b610d0c]{\n    text-align: center;\n    padding-bottom: 1rem;\n}\n.map[data-v-7b610d0c]{\n    width: 100%;\n    height: 16rem;\n}\n@media screen and (min-width: 1024px){\n.profile-info[data-v-7b610d0c]{\n        margin-left: auto;\n        margin-right: auto;\n}\n}\n\n", ""]);
 
 // exports
 
@@ -39227,9 +39268,28 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("input", {
+    directives: [
+      {
+        name: "model",
+        rawName: "v-model",
+        value: _vm.numberInput,
+        expression: "numberInput"
+      }
+    ],
     staticClass: "input",
     attrs: { type: "number" },
-    on: { input: _vm.input }
+    domProps: { value: _vm.numberInput },
+    on: {
+      input: [
+        function($event) {
+          if ($event.target.composing) {
+            return
+          }
+          _vm.numberInput = $event.target.value
+        },
+        _vm.input
+      ]
+    }
   })
 }
 var staticRenderFns = []
@@ -39635,43 +39695,43 @@ var render = function() {
                 ],
                 1
               )
-            ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "step-button" }, [
-          _vm.firstStep
-            ? _c(
-                "div",
-                { staticClass: "first-step-buttons" },
-                [
-                  _c("vue-button", {
-                    attrs: { buttonText: "SIGUIENTE" },
-                    on: { click: _vm.nextStep }
-                  })
-                ],
-                1
-              )
-            : _c(
-                "div",
-                { staticClass: "second-step-buttons" },
-                [
-                  _c("vue-button", {
-                    attrs: { buttonText: "ATRAS" },
-                    on: { click: _vm.goBack }
-                  }),
-                  _vm._v(" "),
-                  _c("vue-button", {
-                    attrs: {
-                      type: "submit",
-                      form: "profile-info",
-                      buttonText: "ACTUALIZAR DATOS"
-                    }
-                  })
-                ],
-                1
-              )
-        ])
+            ])
       ]
-    )
+    ),
+    _vm._v(" "),
+    _c("div", { staticClass: "step-button" }, [
+      _vm.firstStep
+        ? _c(
+            "div",
+            { staticClass: "first-step-buttons" },
+            [
+              _c("vue-button", {
+                attrs: { buttonText: "SIGUIENTE" },
+                on: { click: _vm.nextStep }
+              })
+            ],
+            1
+          )
+        : _c(
+            "div",
+            { staticClass: "second-step-buttons" },
+            [
+              _c("vue-button", {
+                attrs: { buttonText: "ATRAS" },
+                on: { click: _vm.goBack }
+              }),
+              _vm._v(" "),
+              _c("vue-button", {
+                attrs: {
+                  type: "submit",
+                  form: "profile-info",
+                  buttonText: "ACTUALIZAR DATOS"
+                }
+              })
+            ],
+            1
+          )
+    ])
   ])
 }
 var staticRenderFns = [
@@ -54938,7 +54998,14 @@ var router = new vue_router__WEBPACK_IMPORTED_MODULE_0__["default"]({
   }, {
     path: '/login',
     component: _views_login__WEBPACK_IMPORTED_MODULE_9__["default"],
-    name: 'Login'
+    name: 'Login',
+    beforeEnter: function beforeEnter(to, from, next) {
+      if (sessionStorage.getItem('access_token')) {
+        next('/');
+      }
+
+      next();
+    }
   }, {
     path: '/profile',
     component: _views_profile__WEBPACK_IMPORTED_MODULE_10__["default"],
@@ -54947,7 +55014,7 @@ var router = new vue_router__WEBPACK_IMPORTED_MODULE_0__["default"]({
       var username = sessionStorage.getItem('username');
       var form = new FormData();
       form.append('username', username);
-      fetch("http://localhost:8000" + '/api/authCheck', {
+      fetch("http://localhost:8001" + '/api/authCheck', {
         method: 'POST',
         body: form,
         headers: {
@@ -55921,8 +55988,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! H:\evaluacionPHP\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! H:\evaluacionPHP\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /home/damian/Documentos/VSCode/pprojects/phpServer/evaluacionPHP/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /home/damian/Documentos/VSCode/pprojects/phpServer/evaluacionPHP/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

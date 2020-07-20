@@ -42,7 +42,13 @@ const router = new VueRouter({
         {
             path: '/login',
             component: login,
-            name: 'Login'
+            name: 'Login',
+            beforeEnter: (to, from, next) => {
+                if (sessionStorage.getItem('access_token')){
+                    next('/');
+                }
+                next();
+            }
         },
         {
             path: '/profile',

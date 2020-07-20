@@ -1,5 +1,5 @@
 <template>
-  <input class='input' type="number" @input="input">
+  <input class='input' type="number" @input="input" v-model="numberInput">
 </template>
 
 <script>
@@ -12,7 +12,7 @@ export default {
     },
     methods: {
       input: function(){
-        this.$emit('input');
+        this.$emit('input', this.$data.numberInput);
       }
     }
 }

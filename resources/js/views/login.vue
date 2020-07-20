@@ -90,9 +90,7 @@ export default {
             this.$data.loginError = true;
             this.$data.loginMessage = errorMsg; 
         },
-        errorDismiss(formInput){
-            document.getElementById(formInput).classList.remove('error');
-        }
+        
     }
 }
 </script>

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Http\Requests\Login;
 use Tymon\JWTAuth\Exceptions\JWTExceptions;
+use Symfony\Component\HttpFoundation\Cookie;
 class LoginController extends Controller
 {
     /*
@@ -70,7 +71,13 @@ class LoginController extends Controller
         return response()->json([
             'status' => 'logged',
             'access_token' => $attempt
-        ], 200)->withCookie(env('JWT_COOKIE_NAME'), $attempt, 120, null, null, true, true);
+        ], 200)->withCookie(env('JWT_COOKIE_NAME'), 
+        $attempt, 
+        120,
+        null,
+        null,
+        true,
+        true);
     }
     // Devuelve un error y 401.
     private function loginFailed(string $msg){
@@ -90,5 +97,12 @@ class LoginController extends Controller
             ], 500);
         }
     }
-
+/*
+    private function getCookie( $attempt){
+        $cookie = new Cookie(
+            
+        
+        return $cookie;
+    }
+*/
 }

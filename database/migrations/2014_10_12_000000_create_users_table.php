@@ -23,7 +23,7 @@ class CreateUsersTable extends Migration
             $table->unsignedInteger('altura')->nullable();
             $table->unsignedInteger('peso')->nullable();
             $table->string('ubicacion')->nullable();
-            $table->string('api_token');
+            $table->string('fechaNac')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

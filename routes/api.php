@@ -21,3 +21,4 @@ use Illuminate\Support\Facades\Route;
 
 Auth::routes(['register' => false]);
 Route::post('/authCheck', 'UserController@isAuthenticated');    
+Route::post('/updateProfile', 'UserController@updateProfile');

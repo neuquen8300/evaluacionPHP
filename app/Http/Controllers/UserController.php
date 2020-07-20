@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\User;
-use Illuminate\Http\Request;
 use App\Http\Requests\AuthCheck;
-use JWTAuth;
+use App\Http\Requests\UpdateUser;
+use Exception;
 class UserController extends Controller
 {
     public function get($id){
@@ -21,21 +21,9 @@ class UserController extends Controller
 
         $user->save();
     }
-    public function update(UpdateUser $request){
-
-        $updatedUser = $request->validated();
-
-        $user = User::where('email', $updatedUser->email);
-        
-        $user->sexo = $updatedUser['sexo'];
-        $user->altura = $updatedUser['altura'];
-        $user->peso = $updatedUser['peso'];
-        $user->fechaNac = $updatedUser['fechaNac'];
-
-        $user->save();
-
-    }
+    
     public function isAuthenticated(AuthCheck $request){
+        
         $auth = auth()->user();
         if ($request->cookie(env('JWT_COOKIE_NAME')) && $auth){
         return response()->json([
@@ -47,4 +35,25 @@ class UserController extends Controller
             ], 401);
         }
     }
+    public function updateProfile(UpdateUser $request){
+        $updatedUser = $request->validated();
+        $auth = auth()->user();
+        if ($auth) {
+            try{
+                $user = User::where('username', $auth->username)->orWhere('email', $auth->username)->first();
+                $user->altura = $updatedUser['altura'];
+                $user->peso = $updatedUser['peso'];
+                $user->sexo = $updatedUser['sexo'];
+                $user->ubicacion = $updatedUser['ubicacion'];
+                $user->fechaNac = $updatedUser['fechaNac'];
+                $user->save();
+                return response()->json(['status' => 'ok'],200);
+            } catch (Exception $e){
+                return $e; //response()->json(['error' => $e], 500);
+            }
+        } else {
+            return response()->json(['error' => 'Sin autenticar.'], 401);
+        }
+    }
+  
 }

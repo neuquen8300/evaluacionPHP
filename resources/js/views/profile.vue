@@ -7,7 +7,7 @@
             <div class="form-step first-step" v-if='firstStep'>
                 <div class="input-wrapper">
                     <label for="sexo">Indicar Sexo:</label>
-                    <select name="sexo" id="form-sexo" @input="sexModel" placeholder='Seleccionar...' aria-placeholder="Seleccionar...">
+                    <select name="sexo" id="form-sexo" @input="sexModel" placeholder='Seleccionar...' aria-placeholder="Seleccionar..." >
                         <option value="" disabled selected>
                             Seleccionar...
                         </option>
@@ -31,6 +31,7 @@
                         name="altura"
                         id="form-altura"
                         @input="heightModel"
+                        
                     />
                 </div>
                 <div class="input-wrapper">
@@ -45,11 +46,15 @@
                         name="peso"
                         id="form-peso"
                         @input="weightModel"
+                        
                     />
                 </div>
                 <div class="input-wrapper">
                     <label for="Nacimiento">Fecha de nacimiento:</label>
-                    <input type="date" name="fechaNac" id="form-fechaNac" @input="birthModel">
+                    <input type="date" 
+                    name="fechaNac" 
+                    id="form-fechaNac" @input="birthModel" >
+                    
                 </div>
             </div>
             <div class="form-step second-step" v-else>
@@ -59,7 +64,9 @@
                     <vue-google-map />
                 </div>
             </div>
-            <div class="step-button">
+            
+        </form>
+        <div class="step-button">
             <div class="first-step-buttons" v-if="firstStep">
                 <vue-button buttonText='SIGUIENTE' @click='nextStep'></vue-button>
             </div>
@@ -68,62 +75,102 @@
                 <vue-button type="submit" form="profile-info" buttonText='ACTUALIZAR DATOS'></vue-button>
             </div> 
         </div>
-        </form>
-    
     </section>
 </template>
 
 <script>
+import eventBus from '../eventBus';
 export default {
     name: 'profile',
     data(){
+        
         return {
             form: {
                 sexo: '',
                 altura: 0,
                 peso: 0,
                 fechaNac: '',
-            },
+                ubicacion: ''
+        },
             firstStep: true,
-            
+            errorCheck: 0
         }
+    },
+    mounted(){
+        eventBus.$on('setMapPosition', (place) => {
+            this.$data.form.ubicacion = place.formatted_address;
+        })
     },
     methods: {
         nextStep: function(){
-            console.log(this.$data.form);
-            for (let i = 0; i < this.$data.form.length; i++){
-                if(this.$data.form[i].length == 0 || this.$data.form[i] == 0){
-                    console.log(this.$data.form[i]);
-                    return;
+            let select = document.querySelector('select');
+            let input = document.querySelectorAll('input');
+            this.$data.errorCheck = 0;
+            for (let i = 0; i < input.length; i++){
+                if((input[i].value === 0 || input[i].value === '')){
+                    this.$data.errorCheck++;
+                   this.setInputError(input[i].id);
                 } else {
-                    this.$data.firstStep = !this.$data.firstStep;
+                    this.errorDismiss(input[i].id);
                 }
             }
-
+           
+            if (select.value.length == 0){
+                this.$data.errorCheck++;
+                this.setInputError(select.id);
+            }
+            
+            (this.$data.errorCheck == 0) ? this.$data.firstStep = !this.$data.firstStep : null;
         },
         goBack: function(){
             this.$data.firstStep = !this.$data.firstStep;
         },
         sexModel: function(model){
-            this.$data.form.sexo = model;
+            
+            this.$data.form.sexo = model.target.value;
         },
         weightModel: function(model){
+            
             this.$data.form.peso = model;
         },
         heightModel: function(model){
             this.$data.form.altura = model;
         },
         birthModel: function(model){
-            this.$data.form.fechaNac = model;
+            this.$data.form.fechaNac = model.target.value;
         },
         updateProfile: function(){
-            let data = document.querySelectorAll('input');
-            console.log(data);
-            let form = [];
-            for (let i = 0; i < data.length; i++){
-                form.push([data[i].id, data[i].value]);
-            }
-           
+            let data = this.$data.form;
+            let form = new FormData;
+            form.append('sexo', data.sexo);
+            form.append('peso', data.peso);
+            form.append('altura', data.altura);
+            form.append('fechaNac', data.fechaNac);
+            form.append('ubicacion', data.ubicacion);
+
+            fetch(process.env.MIX_APP_URL + '/api/updateProfile', {
+                method: 'POST',
+                body: form,
+                headers: {
+                    'Authorization': 'Bearer ' + sessionStorage.getItem('access_token')
+                }
+            })
+            .then(res => {
+                return res.json();
+            })
+            .then(data => {
+                console.log(data);
+            })
+            .catch(e => {
+                return e;
+            })
+        },
+        setInputError: function(formInput){
+            document.getElementById(formInput).classList.add('error');
+
+        },
+        errorDismiss(formInput){
+            document.getElementById(formInput).classList.remove('error');
         }
        
     }
