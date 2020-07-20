@@ -2392,6 +2392,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'profile',
@@ -2399,13 +2400,14 @@ __webpack_require__.r(__webpack_exports__);
     return {
       form: {
         sexo: '',
-        altura: 0,
-        peso: 0,
+        altura: null,
+        peso: null,
         fechaNac: '',
         ubicacion: ''
       },
       firstStep: true,
-      errorCheck: 0
+      errorCheck: 0,
+      errorMsg: ''
     };
   },
   mounted: function mounted() {
@@ -2420,6 +2422,7 @@ __webpack_require__.r(__webpack_exports__);
       var select = document.querySelector('select');
       var input = document.querySelectorAll('input');
       this.$data.errorCheck = 0;
+      this.$data.errorMsg = ''; // Si hay errores en inputs, error++
 
       for (var i = 0; i < input.length; i++) {
         if (input[i].value === 0 || input[i].value === '') {
@@ -2428,12 +2431,20 @@ __webpack_require__.r(__webpack_exports__);
         } else {
           this.errorDismiss(input[i].id);
         }
-      }
+      } // Si no esta seleccionado el sexo, error++
+
 
       if (select.value.length == 0) {
         this.$data.errorCheck++;
         this.setInputError(select.id);
-      }
+      } // Si no sos mayor de 18 años, error++
+
+
+      if (!this.ageValidation()) {
+        this.$data.errorMsg = "Tenes que ser mayor de 18 años.";
+        this.$data.errorCheck++;
+      } //Si no hay errores, se procede al siguiente cuadro.
+
 
       this.$data.errorCheck == 0 ? this.$data.firstStep = !this.$data.firstStep : null;
     },
@@ -2452,6 +2463,40 @@ __webpack_require__.r(__webpack_exports__);
     birthModel: function birthModel(model) {
       this.$data.form.fechaNac = model.target.value;
     },
+    ageValidation: function ageValidation() {
+      // Obtenemos datos actuales y los seleccionados por el usuario.
+      // Los convertimos a arrays.
+      // Calculamos si el usuario es mayor de edad: 
+      // Primero por el año, luego, por los meses por si yearsCalc es 18 o mas pero monthCalc es < a 0,
+      // Devuelve isPermitted siendo true si está permitido o false si lo contrario.
+      var currentDate = new Date();
+      var arrayDate = [currentDate.getFullYear(), currentDate.getMonth() + 1, currentDate.getDate()];
+      var inputDate = this.$data.form.fechaNac.split('-');
+      var yearsCalc = inputDate[0] ? parseInt(arrayDate[0]) - inputDate[0] : false;
+      var monthCalc = parseInt(arrayDate[1]) - inputDate[1];
+      var daysCalc = parseInt(arrayDate[2]) - inputDate[2];
+      var isPermitted = false;
+
+      function calc() {
+        return yearsCalc >= 18;
+      }
+
+      if (calc()) {
+        isPermitted = true;
+      } else {
+        if (monthCalc >= 0 && daysCalc > 0) {
+          yearsCalc++;
+          if (calc()) isPermitted = true;
+        } else if (monthCalc > 0) {
+          yearsCalc++;
+          if (calc()) isPermitted = true;
+        } else if (monthCalc < 0 && yearsCalc == 18) {
+          yearsCalc--;
+        }
+      }
+
+      return isPermitted;
+    },
     updateProfile: function updateProfile() {
       var data = this.$data.form;
       var form = new FormData();
@@ -2468,14 +2513,13 @@ __webpack_require__.r(__webpack_exports__);
         }
       }).then(function (res) {
         return res.json();
-      }).then(function (data) {
-        console.log(data);
-      })["catch"](function (e) {
+      }).then(function (data) {})["catch"](function (e) {
         return e;
       });
     },
     setInputError: function setInputError(formInput) {
       document.getElementById(formInput).classList.add('error');
+      this.$data.errorMsg = "Faltan completar campos";
     },
     errorDismiss: function errorDismiss(formInput) {
       document.getElementById(formInput).classList.remove('error');
@@ -6927,7 +6971,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.vue-button[data-v-85c6a2c6]{\n    font-family: 'Metropolis';\n    font-weight: 600;\n    border: none;\n    padding: 1rem;\n    text-align: center;\n    background-color: #1256ff;\n    color: white;\n    border-radius: 2px;\n}\n", ""]);
+exports.push([module.i, "\n.vue-button[data-v-85c6a2c6]{\n    font-family: 'Metropolis';\n    font-weight: 600;\n    border: none;\n    padding: 1rem;\n    text-align: center;\n    background-color: #1256ff;\n    color: white;\n    border-radius: 2px;\n    box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.2);\n}\n", ""]);
 
 // exports
 
@@ -7079,7 +7123,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.profile-info[data-v-7b610d0c]{\n    background-color: #bbbbff;\n    width: calc(100vw - 2rem);\n    margin: 1rem;\n    max-width: 52rem;\n    display: flex;\n    flex-direction: column;\n    border-radius: 2px;\n}\n.profile-info-form[data-v-7b610d0c]{\n    padding: 0 1rem;\n}\n.profile-info header[data-v-7b610d0c]{\n    text-align: center;\n}\n.input-wrapper[data-v-7b610d0c]{\n    padding-bottom: 1rem;\n}\n.google-search[data-v-7b610d0c]{\n    margin-bottom: 1rem;\n}\ninput[type=date][data-v-7b610d0c]{\n   \n    padding: 0 1rem;\n    height: 2rem;\n    border-radius: 2px;\n    border: 1px solid #ababab;\n}\n.step-button[data-v-7b610d0c]{\n    text-align: center;\n    padding-bottom: 1rem;\n}\n.map[data-v-7b610d0c]{\n    width: 100%;\n    height: 16rem;\n}\n@media screen and (min-width: 1024px){\n.profile-info[data-v-7b610d0c]{\n        margin-left: auto;\n        margin-right: auto;\n}\n}\n\n", ""]);
+exports.push([module.i, "\n.profile-info[data-v-7b610d0c]{\n    background-color: #bbbbff;\n    width: calc(100vw - 2rem);\n    margin: 1rem;\n    max-width: 52rem;\n    display: flex;\n    flex-direction: column;\n    border-radius: 2px;\n}\n.profile-info-form[data-v-7b610d0c]{\n    padding: 0 1rem;\n}\n.profile-info header[data-v-7b610d0c]{\n    text-align: center;\n}\n.input-wrapper[data-v-7b610d0c]{\n    padding-bottom: 1rem;\n}\n.google-search[data-v-7b610d0c]{\n    margin-bottom: 1rem;\n}\ninput[type=date][data-v-7b610d0c]{\n   \n    padding: 0 1rem;\n    height: 2rem;\n    border-radius: 2px;\n    border: 1px solid #ababab;\n}\n.step-button[data-v-7b610d0c]{\n    text-align: center;\n    padding-bottom: 1rem;\n}\n.map[data-v-7b610d0c]{\n    width: 100%;\n    height: 16rem;\n}\n.errorMsg[data-v-7b610d0c]{\n    padding-bottom: 1rem;\n}\n@media screen and (min-width: 1024px){\n.profile-info[data-v-7b610d0c]{\n        margin-left: auto;\n        margin-right: auto;\n}\n}\n\n", ""]);
 
 // exports
 
@@ -39705,6 +39749,12 @@ var render = function() {
             "div",
             { staticClass: "first-step-buttons" },
             [
+              _vm.errorCheck
+                ? _c("div", { staticClass: "errorMsg" }, [
+                    _vm._v(_vm._s(_vm.errorMsg))
+                  ])
+                : _vm._e(),
+              _vm._v(" "),
               _c("vue-button", {
                 attrs: { buttonText: "SIGUIENTE" },
                 on: { click: _vm.nextStep }

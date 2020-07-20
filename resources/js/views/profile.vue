@@ -68,6 +68,7 @@
         </form>
         <div class="step-button">
             <div class="first-step-buttons" v-if="firstStep">
+                <div class="errorMsg" v-if="errorCheck">{{errorMsg}}</div>
                 <vue-button buttonText='SIGUIENTE' @click='nextStep'></vue-button>
             </div>
             <div class="second-step-buttons" v-else>
@@ -87,13 +88,14 @@ export default {
         return {
             form: {
                 sexo: '',
-                altura: 0,
-                peso: 0,
+                altura: null,
+                peso: null,
                 fechaNac: '',
                 ubicacion: ''
         },
             firstStep: true,
-            errorCheck: 0
+            errorCheck: 0,
+            errorMsg: ''
         }
     },
     mounted(){
@@ -106,6 +108,8 @@ export default {
             let select = document.querySelector('select');
             let input = document.querySelectorAll('input');
             this.$data.errorCheck = 0;
+            this.$data.errorMsg = '';
+            // Si hay errores en inputs, error++
             for (let i = 0; i < input.length; i++){
                 if((input[i].value === 0 || input[i].value === '')){
                     this.$data.errorCheck++;
@@ -114,12 +118,19 @@ export default {
                     this.errorDismiss(input[i].id);
                 }
             }
-           
+           // Si no esta seleccionado el sexo, error++
             if (select.value.length == 0){
                 this.$data.errorCheck++;
                 this.setInputError(select.id);
             }
             
+            // Si no sos mayor de 18 años, error++
+            if (!this.ageValidation()){
+                this.$data.errorMsg = "Tenes que ser mayor de 18 años."
+                this.$data.errorCheck++;
+            }
+
+            //Si no hay errores, se procede al siguiente cuadro.
             (this.$data.errorCheck == 0) ? this.$data.firstStep = !this.$data.firstStep : null;
         },
         goBack: function(){
@@ -138,6 +149,39 @@ export default {
         },
         birthModel: function(model){
             this.$data.form.fechaNac = model.target.value;
+        },
+        ageValidation: function(){
+
+            // Obtenemos datos actuales y los seleccionados por el usuario.
+            // Los convertimos a arrays.
+            // Calculamos si el usuario es mayor de edad: 
+            // Primero por el año, luego, por los meses por si yearsCalc es 18 o mas pero monthCalc es < a 0,
+            // Devuelve isPermitted siendo true si está permitido o false si lo contrario.
+
+            let currentDate = new Date();
+            let arrayDate = [currentDate.getFullYear(), currentDate.getMonth() + 1, currentDate.getDate()];
+            let inputDate = this.$data.form.fechaNac.split('-');
+            let yearsCalc = inputDate[0] ? parseInt(arrayDate[0]) - inputDate[0] : false;
+            let monthCalc = parseInt(arrayDate[1]) - inputDate[1];
+            let daysCalc = parseInt(arrayDate[2]) - inputDate[2];
+            let isPermitted = false;
+            function calc(){
+                return yearsCalc >= 18
+            }
+            if (calc()){
+                isPermitted = true;
+            } else {
+                if (monthCalc >= 0 && daysCalc > 0){
+                    yearsCalc++;
+                    if (calc()) isPermitted = true;
+                } else if (monthCalc > 0){
+                    yearsCalc++;
+                    if (calc()) isPermitted = true;
+                } else if (monthCalc < 0 && yearsCalc == 18){
+                    yearsCalc--;
+                }
+            }
+            return isPermitted;
         },
         updateProfile: function(){
             let data = this.$data.form;
@@ -159,7 +203,6 @@ export default {
                 return res.json();
             })
             .then(data => {
-                console.log(data);
             })
             .catch(e => {
                 return e;
@@ -167,7 +210,7 @@ export default {
         },
         setInputError: function(formInput){
             document.getElementById(formInput).classList.add('error');
-
+            this.$data.errorMsg = "Faltan completar campos";
         },
         errorDismiss(formInput){
             document.getElementById(formInput).classList.remove('error');
@@ -216,6 +259,9 @@ input[type=date]{
 .map{
     width: 100%;
     height: 16rem;
+}
+.errorMsg{
+    padding-bottom: 1rem;
 }
 @media screen and (min-width: 1024px){
     .profile-info{
